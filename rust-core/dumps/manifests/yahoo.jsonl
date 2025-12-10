@@ -1,0 +1,3 @@
+{"symbol": "AAPL", "url": "https://query1.finance.yahoo.com/v7/finance/download/AAPL?period1=1672531200&period2=1765411200&interval=1d&events=history&includeAdjustedClose=true"}
+{"symbol": "MSFT", "url": "https://query1.finance.yahoo.com/v7/finance/download/MSFT?period1=1672531200&period2=1765411200&interval=1d&events=history&includeAdjustedClose=true"}
+{"symbol": "SPY", "url": "https://query1.finance.yahoo.com/v7/finance/download/SPY?period1=1672531200&period2=1765411200&interval=1d&events=history&includeAdjustedClose=true"}

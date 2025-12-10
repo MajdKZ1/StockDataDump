@@ -1,0 +1,24 @@
+__pycache__/
+.venv/
+.DS_Store
+*.pyc
+*.pyo
+
+# Python packaging
+python/*.egg-info/
+python/build/
+python/dist/
+
+# Rust
+rust-core/target/
+
+# Data dumps
+dumps/raw/
+dumps/arrow/
+dumps/manifests/*.jsonl
+
+# Logs
+*.log
+install.log
+clean.log
+update.log
