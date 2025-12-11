@@ -1,0 +1,24 @@
+# Contributing to this project
+
+StockDataDump is still rough around the edges and needs a lot of improvement.  
+**Any help is welcome — bugs, fixes, ideas, testing, docs, whatever.**  
+If you want to jump in, just refer to the README for installation and setup.
+
+## Ways to Help
+- Report bugs or weird behavior  
+- Suggest features or improvements  
+- Clean up code or fix broken parts  
+- Improve the Rust fetcher or Python tools  
+- Add new data source support  
+- Test stuff and tell us what breaks  
+
+## Dev Help Needed
+If you're a Rust or Python developer (or learning), **please consider contributing** — there’s plenty to build and fix.
+
+## Pull Requests
+- Keep PRs small and clear  
+- Mark unfinished work as a Draft  
+- Make sure it runs without crashing  
+
+Thanks for contributing — the project grows with your help.  
+**Maintained by OpenNET LLC.**
