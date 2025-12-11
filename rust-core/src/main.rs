@@ -199,6 +199,15 @@ async fn fetch_once(client: &Client, job: &Job, output: &PathBuf, level: i32) ->
 
     let status = resp.status();
     if !status.is_success() {
+        if status == reqwest::StatusCode::UNAUTHORIZED {
+            anyhow::bail!(
+                "non-2xx {} Unauthorized for {}\n\
+                Hint: This usually means invalid or expired crumb/cookie. \
+                Please regenerate your Yahoo Finance credentials and update the manifest.",
+                status,
+                job.url
+            );
+        }
         anyhow::bail!("non-2xx {} for {}", status, job.url);
     }
 
@@ -252,13 +261,49 @@ fn read_manifest(path: &PathBuf) -> Result<Vec<Job>> {
     let text = std::fs::read_to_string(path)
         .with_context(|| format!("reading manifest {}", path.display()))?;
     let mut jobs = Vec::new();
+    let mut has_placeholder = false;
+    
     for (idx, line) in text.lines().enumerate() {
         if line.trim().is_empty() {
             continue;
         }
         let job: Job =
             serde_json::from_str(line).with_context(|| format!("parsing line {} in manifest", idx + 1))?;
+        
+        // Check for placeholder values in URL
+        if job.url.contains("YOUR_CRUMB") || job.url.contains("crumb=YOUR_CRUMB") {
+            has_placeholder = true;
+            warn!(
+                "Manifest contains placeholder crumb value in URL for {}: {}",
+                job.symbol, job.url
+            );
+        }
+        
+        // Check for placeholder values in headers
+        if let Some(headers) = &job.headers {
+            if let Some(cookie) = headers.get("cookie") {
+                if cookie.contains("...") || cookie.contains("YOUR_COOKIE") || cookie == "B=..." {
+                    has_placeholder = true;
+                    warn!(
+                        "Manifest contains placeholder cookie value for {}",
+                        job.symbol
+                    );
+                }
+            }
+        }
+        
         jobs.push(job);
     }
+    
+    if has_placeholder {
+        error!(
+            "Manifest contains placeholder authentication values (YOUR_CRUMB, B=..., etc.).\n\
+            Please regenerate the manifest with valid Yahoo Finance credentials.\n\
+            See README.md for instructions on obtaining valid crumb and cookie values.\n\
+            Run: stockdatadump manifest <tickers> --crumb <real-crumb> --cookie <real-cookie>"
+        );
+        anyhow::bail!("Manifest contains placeholder authentication values. Please regenerate with valid credentials.");
+    }
+    
     Ok(jobs)
 }

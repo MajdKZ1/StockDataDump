@@ -41,6 +41,29 @@ def write_manifest(
     crumb = crumb or os.getenv("YAHOO_CRUMB")
     cookie = cookie or os.getenv("YAHOO_COOKIE")
 
+    # Validate that placeholder values are not used
+    if crumb and crumb.upper() in ("YOUR_CRUMB", "YOUR_CRUMB_VALUE", "<YOUR_CRUMB>", "YOUR_CRUMB_HERE"):
+        console.print("[red]Error:[/red] Please provide a valid Yahoo Finance crumb value, not a placeholder.")
+        console.print("[yellow]Hint:[/yellow] Visit https://finance.yahoo.com/quote/AAPL and check the browser's Network tab")
+        console.print("       when downloading historical data to find the crumb parameter in the URL.")
+        raise ValueError("Invalid crumb: placeholder value detected. Please use a real crumb from Yahoo Finance.")
+
+    if cookie and ("..." in cookie or cookie.upper() in ("YOUR_COOKIE", "<YOUR_COOKIE>", "YOUR_COOKIE_HERE", "B=...")):
+        console.print("[red]Error:[/red] Please provide a valid Yahoo Finance cookie value, not a placeholder.")
+        console.print("[yellow]Hint:[/yellow] Visit https://finance.yahoo.com/quote/AAPL and check the browser's Network tab")
+        console.print("       to copy the Cookie header from the request headers.")
+        raise ValueError("Invalid cookie: placeholder value detected. Please use a real cookie from Yahoo Finance.")
+
+    if not crumb:
+        console.print("[red]Error:[/red] Yahoo Finance requires a crumb value for authentication.")
+        console.print("[yellow]Hint:[/yellow] Provide --crumb <value> or set YAHOO_CRUMB environment variable.")
+        raise ValueError("Missing required crumb parameter")
+
+    if not cookie:
+        console.print("[red]Error:[/red] Yahoo Finance requires a cookie value for authentication.")
+        console.print("[yellow]Hint:[/yellow] Provide --cookie <value> or set YAHOO_COOKIE environment variable.")
+        raise ValueError("Missing required cookie parameter")
+
     output.parent.mkdir(parents=True, exist_ok=True)
     lines: List[str] = []
     for ticker in tickers:

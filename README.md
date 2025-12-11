@@ -61,8 +61,22 @@ pip install -e python
 
 ## Fetching and Converting Data
 
-Yahoo Finance requires both a **crumb** and a **cookie**.  
+Yahoo Finance requires both a **crumb** and a **cookie** for authentication.  
 These may be passed directly or exported as environment variables (`YAHOO_CRUMB`, `YAHOO_COOKIE`).
+
+### Getting Yahoo Finance Credentials
+
+To obtain valid credentials:
+
+1. **Open your browser** and navigate to https://finance.yahoo.com/quote/AAPL/history
+2. **Open Developer Tools** (F12) and go to the **Network** tab
+3. **Download historical data** (click Download button or adjust date range)
+4. **Find the download request** in the Network tab and click on it
+5. **Extract credentials:**
+   - **Crumb**: Look in the request URL for the `crumb=` parameter (e.g., `crumb=abc123xyz`)
+   - **Cookie**: Copy the entire `Cookie` header value from the request headers
+
+**Note**: These credentials may expire after some time. If you get 401 errors, regenerate them.
 
 ### 1. Generate a manifest
 
@@ -70,8 +84,18 @@ These may be passed directly or exported as environment variables (`YAHOO_CRUMB`
 stockdatadump manifest AAPL MSFT SPY \
   -o dumps/manifests/yahoo.jsonl \
   --start 2023-01-01 \
-  --crumb YOUR_CRUMB \
-  --cookie "B=...; other cookies"
+  --crumb "your-actual-crumb-value" \
+  --cookie "B=actual-cookie-value; other-cookies=values"
+```
+
+Or use environment variables:
+
+```bash
+export YAHOO_CRUMB="your-actual-crumb-value"
+export YAHOO_COOKIE="B=actual-cookie-value; other-cookies=values"
+stockdatadump manifest AAPL MSFT SPY \
+  -o dumps/manifests/yahoo.jsonl \
+  --start 2023-01-01
 ```
 
 ### 2. Fetch data using the Rust core
